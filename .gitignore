@@ -1,0 +1,16 @@
+/.vs
+/out
+ext/project_path.hpp
+vc140.pdb
+/CMakeFiles
+vc140.pdb
+ZERO_CHECK.vcxproj
+ZERO_CHECK.vcxproj.filters
+CMakeCache.txt
+cmake_install.cmake
+CMakeSettings.json
+CMakePresets.json
+/build
+/data/tilemaps/untitled.txt
+/.vscode/settings.json
+/enc_temp_folder
