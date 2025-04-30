@@ -4,6 +4,7 @@ module;
 #include <common.hpp>
 #include <iostream>
 #include <GLFW/glfw3.h>
+#include <numbers>
 
 export module InputSystem;
 import ECS;
@@ -15,6 +16,7 @@ import EditorHelpers;
 import SceneSystem;
 import Singletons;
 import WindowHelpers;
+import Math;
 
 using std::cout;
 using std::endl;
@@ -43,6 +45,20 @@ public:
 	}
 
 	void tick(GLFWwindow* window) {
+		isAnyInputJustPressed = false;
+		glfwPollEvents();
+
+		for (unsigned int i = 0; i < 2; i++) {
+			int buttonCount;
+			const unsigned char* buttons = glfwGetJoystickButtons(i, &buttonCount);
+			for (int i = 0; i < buttonCount; ++i) {
+				if (buttons[i] == GLFW_PRESS) {
+					isAnyInputJustPressed |= true;
+					break;
+				}
+			}
+		}
+
 		// Store previous inputs
 		for (auto& entity : ecs.playerInputs.entities) {
 			PlayerInput& playerInput = ecs.playerInputs.get(entity);
@@ -58,6 +74,13 @@ public:
 			playerInput.inputs |= getKeyboardInput(playerInput.controllerId, window).inputs;
 			
 		}
+
+		isGamepad1Connected = glfwJoystickPresent(GLFW_JOYSTICK_1);
+		isGamepad2Connected = glfwJoystickPresent(GLFW_JOYSTICK_2);
+		
+
+
+		
 	
 
 		// DEBUG: Check if controllers are detected
@@ -101,20 +124,31 @@ public:
 
 			if (axes && buttons) {
 				// Left stick X and Y
-				float leftX = std::abs(axes[0]) > DEADZONE ? axes[0] : 0.0f;
-				float leftY = std::abs(axes[1]) > DEADZONE ? axes[1] : 0.0f;
+				Vector2 stickPos = Vector2(
+					std::abs(axes[0]) > DEADZONE ? axes[0] : 0.0f,
+					std::abs(axes[1]) > DEADZONE ? axes[1] : 0.0f
+				);
+
+				if (stickPos.length() < DEADZONE) {
+					stickPos = Vector2::zero();
+				} else {
+					stickPos = Vector2::right().rotated(roundToNearest(stickPos.angle(), std::numbers::pi / 4));
+				}
+
 
 				// Update directional inputs based on left stick
-				result.set(INPUT_ID::RIGHT, leftX > DEADZONE);
-				result.set(INPUT_ID::LEFT, leftX < -DEADZONE);
-				result.set(INPUT_ID::DOWN, leftY > DEADZONE);
-				result.set(INPUT_ID::UP, leftY < -DEADZONE);
+				result.set(INPUT_ID::RIGHT, stickPos.x > DEADZONE || buttons[11]);
+				result.set(INPUT_ID::LEFT, stickPos.x < -DEADZONE || buttons[13]);
+				result.set(INPUT_ID::DOWN, stickPos.y > DEADZONE || buttons[12]);
+				result.set(INPUT_ID::UP, stickPos.y < -DEADZONE || buttons[10]);
 
 				// Map controller buttons to actions
 				result.set(INPUT_ID::JUMP, buttons[3] == GLFW_PRESS);
 				result.set(INPUT_ID::ATTACK, buttons[1] == GLFW_PRESS);
 				result.set(INPUT_ID::SPECIAL,	buttons[GLFW_GAMEPAD_BUTTON_LEFT_BUMPER] == GLFW_PRESS 
 											|| buttons[GLFW_GAMEPAD_BUTTON_RIGHT_BUMPER] == GLFW_PRESS);
+
+				result.set(INPUT_ID::PAUSE, buttons[GLFW_GAMEPAD_BUTTON_START] == GLFW_PRESS);
 			}
 		}
 
@@ -178,18 +212,9 @@ public:
 			
 			
 			}
+			isAnyInputJustPressed = true;
 
-			if (key != GLFW_KEY_R && sceneTime > 0.1f) {
-				if (gameState.currentScreen == GAME_SCREEN::TITLE_SCREEN) {
-					sceneSystem.setScene(GAME_SCREEN::CHARACTER_SELECT_SCREEN);
-				}
-			}
-
-			if (key != GLFW_KEY_R && sceneTime > 1.0f) {
-				if (gameState.currentScreen == GAME_SCREEN::GAME_END_SCREEN) {
-					sceneSystem.setScene(GAME_SCREEN::CHARACTER_SELECT_SCREEN);
-				}
-			}
+			
 		}
 
 		

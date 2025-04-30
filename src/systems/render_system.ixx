@@ -2023,28 +2023,29 @@ public:
 					camera
 				);
 
+				bool isGamepad = playerInput.controllerId == 1 ? isGamepad1Connected : isGamepad2Connected;
 				if (playerOptions.playerType == PLAYER_TYPE_ID::HUMAN) {
-					drawSprite(TEXTURE_ASSET_ID::INPUTS, transform.getTranslation() + Vector2::right() * 50, Vector2::one(), 0.0f, Color::white(), Vector2::unitCenter(), camera, getSubSpriteRect({ 34, 24 }, getInputSpriteIndex(playerInput.controllerId, INPUT_ID::RIGHT)));
-					drawSprite(TEXTURE_ASSET_ID::INPUTS, transform.getTranslation() + Vector2::left()  * 50, Vector2::one(), 0.0f, Color::white(), Vector2::unitCenter(), camera, getSubSpriteRect({ 34, 24 }, getInputSpriteIndex(playerInput.controllerId, INPUT_ID::LEFT)));
+					drawSprite(TEXTURE_ASSET_ID::INPUTS, transform.getTranslation() + Vector2::right() * 50, Vector2::one(), 0.0f, Color::white(), Vector2::unitCenter(), camera, getSubSpriteRect({ 34, 24 }, getInputSpriteIndex(playerInput.controllerId, INPUT_ID::RIGHT, isGamepad)));
+					drawSprite(TEXTURE_ASSET_ID::INPUTS, transform.getTranslation() + Vector2::left() * 50, Vector2::one(), 0.0f, Color::white(), Vector2::unitCenter(), camera, getSubSpriteRect({ 34, 24 }, getInputSpriteIndex(playerInput.controllerId, INPUT_ID::LEFT, isGamepad)));
 				}
 
 				if (playerInput.controllerId == 2) {
-					drawSprite(TEXTURE_ASSET_ID::INPUTS, transform.getTranslation() + Vector2(73, -88), Vector2::one(), 0.0f, Color::white(), Vector2::unitCenter(), camera, getSubSpriteRect({34, 24}, getInputSpriteIndex(playerInput.controllerId, INPUT_ID::UP)));
-					drawSprite(TEXTURE_ASSET_ID::INPUTS, transform.getTranslation() + Vector2(73, -88) + Vector2::down() * 15, Vector2::one(), 0.0f, Color::white(), Vector2::unitCenter(), camera, getSubSpriteRect({34, 24}, getInputSpriteIndex(playerInput.controllerId, INPUT_ID::DOWN)));
+					drawSprite(TEXTURE_ASSET_ID::INPUTS, transform.getTranslation() + Vector2(73, -88), Vector2::one(), 0.0f, Color::white(), Vector2::unitCenter(), camera, getSubSpriteRect({ 34, 24 }, getInputSpriteIndex(playerInput.controllerId, INPUT_ID::UP, isGamepad)));
+					drawSprite(TEXTURE_ASSET_ID::INPUTS, transform.getTranslation() + Vector2(73, -88) + Vector2::down() * 15, Vector2::one(), 0.0f, Color::white(), Vector2::unitCenter(), camera, getSubSpriteRect({ 34, 24 }, getInputSpriteIndex(playerInput.controllerId, INPUT_ID::DOWN, isGamepad)));
 				}
 
 				Vector2 inputPos = transform.getTranslation() + Vector2(-50 + 32, 46);
 				Vector2 spacing = Vector2(13, 15);
 
-				
+
 				if (playerOptions.playerType == PLAYER_TYPE_ID::HUMAN) {
-					drawSprite(TEXTURE_ASSET_ID::INPUTS, inputPos + Vector2::down() * spacing * 0 + Vector2::left() * spacing * 3, Vector2::one(), 0.0f, Color::white(), Vector2::unitCenter(), camera, getSubSpriteRect({ 34, 24 }, getInputSpriteIndex(playerInput.controllerId, INPUT_ID::UP)));
-					drawSprite(TEXTURE_ASSET_ID::INPUTS, inputPos + Vector2::down() * spacing * 0 + Vector2::left() * spacing * 2, Vector2::one(), 0.0f, Color::white(), Vector2::unitCenter(), camera, getSubSpriteRect({ 34, 24 }, getInputSpriteIndex(playerInput.controllerId, INPUT_ID::LEFT)));
-					drawSprite(TEXTURE_ASSET_ID::INPUTS, inputPos + Vector2::down() * spacing * 0 + Vector2::left() * spacing * 1, Vector2::one(), 0.0f, Color::white(), Vector2::unitCenter(), camera, getSubSpriteRect({ 34, 24 }, getInputSpriteIndex(playerInput.controllerId, INPUT_ID::DOWN)));
-					drawSprite(TEXTURE_ASSET_ID::INPUTS, inputPos + Vector2::down() * spacing * 0 + Vector2::left() * spacing * 0, Vector2::one(), 0.0f, Color::white(), Vector2::unitCenter(), camera, getSubSpriteRect({ 34, 24 }, getInputSpriteIndex(playerInput.controllerId, INPUT_ID::RIGHT)));
-					drawSprite(TEXTURE_ASSET_ID::INPUTS, inputPos + Vector2::down() * spacing * 1, Vector2::one(), 0.0f, Color::white(), Vector2::unitCenter(), camera, getSubSpriteRect({ 34, 24 }, getInputSpriteIndex(playerInput.controllerId, INPUT_ID::JUMP)));
-					drawSprite(TEXTURE_ASSET_ID::INPUTS, inputPos + Vector2::down() * spacing * 2, Vector2::one(), 0.0f, Color::white(), Vector2::unitCenter(), camera, getSubSpriteRect({ 34, 24 }, getInputSpriteIndex(playerInput.controllerId, INPUT_ID::ATTACK)));
-					drawSprite(TEXTURE_ASSET_ID::INPUTS, inputPos + Vector2::down() * spacing * 3, Vector2::one(), 0.0f, Color::white(), Vector2::unitCenter(), camera, getSubSpriteRect({ 34, 24 }, getInputSpriteIndex(playerInput.controllerId, INPUT_ID::SPECIAL)));
+					drawSprite(TEXTURE_ASSET_ID::INPUTS, inputPos + Vector2::down() * spacing * 0 + Vector2::left() * spacing * 3, Vector2::one(), 0.0f, Color::white(), Vector2::unitCenter(), camera, getSubSpriteRect({ 34, 24 }, getInputSpriteIndex(playerInput.controllerId, INPUT_ID::UP, isGamepad)));
+					drawSprite(TEXTURE_ASSET_ID::INPUTS, inputPos + Vector2::down() * spacing * 0 + Vector2::left() * spacing * 2, Vector2::one(), 0.0f, Color::white(), Vector2::unitCenter(), camera, getSubSpriteRect({ 34, 24 }, getInputSpriteIndex(playerInput.controllerId, INPUT_ID::LEFT, isGamepad)));
+					drawSprite(TEXTURE_ASSET_ID::INPUTS, inputPos + Vector2::down() * spacing * 0 + Vector2::left() * spacing * 1, Vector2::one(), 0.0f, Color::white(), Vector2::unitCenter(), camera, getSubSpriteRect({ 34, 24 }, getInputSpriteIndex(playerInput.controllerId, INPUT_ID::DOWN, isGamepad)));
+					drawSprite(TEXTURE_ASSET_ID::INPUTS, inputPos + Vector2::down() * spacing * 0 + Vector2::left() * spacing * 0, Vector2::one(), 0.0f, Color::white(), Vector2::unitCenter(), camera, getSubSpriteRect({ 34, 24 }, getInputSpriteIndex(playerInput.controllerId, INPUT_ID::RIGHT, isGamepad)));
+					drawSprite(TEXTURE_ASSET_ID::INPUTS, inputPos + Vector2::down() * spacing * 1, Vector2::one(), 0.0f, Color::white(), Vector2::unitCenter(), camera, getSubSpriteRect({ 34, 24 }, getInputSpriteIndex(playerInput.controllerId, INPUT_ID::JUMP, isGamepad)));
+					drawSprite(TEXTURE_ASSET_ID::INPUTS, inputPos + Vector2::down() * spacing * 2, Vector2::one(), 0.0f, Color::white(), Vector2::unitCenter(), camera, getSubSpriteRect({ 34, 24 }, getInputSpriteIndex(playerInput.controllerId, INPUT_ID::ATTACK, isGamepad)));
+					drawSprite(TEXTURE_ASSET_ID::INPUTS, inputPos + Vector2::down() * spacing * 3, Vector2::one(), 0.0f, Color::white(), Vector2::unitCenter(), camera, getSubSpriteRect({ 34, 24 }, getInputSpriteIndex(playerInput.controllerId, INPUT_ID::SPECIAL, isGamepad)));
 				}
 
 				for (auto& textEntity : characterSelect.controlTexts) {
@@ -2065,13 +2066,13 @@ public:
 
 			drawSprite(getArenaBackgroundFromTheme(gameState.arenaTheme), Vector2::zero(), Vector2::one(), 0, Color::white(), Vector2::unitCenter(), camera, Rect(0.25, 0.25, 0.75, 0.75));
 
-			drawSprite(TEXTURE_ASSET_ID::INPUTS, Vector2::right() * 150 + Vector2::up() * 8, Vector2::one(), 0.0f, Color::white(), Vector2::unitCenter(), camera, getSubSpriteRect({34, 24}, getInputSpriteIndex(1, INPUT_ID::RIGHT)));
-			drawSprite(TEXTURE_ASSET_ID::INPUTS, Vector2::left() * 150 + Vector2::up() * 8, Vector2::one(), 0.0f, Color::white(), Vector2::unitCenter(), camera, getSubSpriteRect({ 34, 24 }, getInputSpriteIndex(1, INPUT_ID::LEFT)));
-			drawSprite(TEXTURE_ASSET_ID::INPUTS, Vector2::right() * 150 + Vector2::down() * 8, Vector2::one(), 0.0f, Color::white(), Vector2::unitCenter(), camera, getSubSpriteRect({ 34, 24 }, getInputSpriteIndex(2, INPUT_ID::RIGHT)));
-			drawSprite(TEXTURE_ASSET_ID::INPUTS, Vector2::left() * 150 + Vector2::down() * 8, Vector2::one(), 0.0f, Color::white(), Vector2::unitCenter(), camera, getSubSpriteRect({ 34, 24 }, getInputSpriteIndex(2, INPUT_ID::LEFT)));
+			drawSprite(TEXTURE_ASSET_ID::INPUTS, Vector2::right() * 150 + Vector2::up() * 8, Vector2::one(), 0.0f, Color::white(), Vector2::unitCenter(), camera, getSubSpriteRect({34, 24}, getInputSpriteIndex(1, INPUT_ID::RIGHT, isGamepad1Connected)));
+			drawSprite(TEXTURE_ASSET_ID::INPUTS, Vector2::left() * 150 + Vector2::up() * 8, Vector2::one(), 0.0f, Color::white(), Vector2::unitCenter(), camera, getSubSpriteRect({ 34, 24 }, getInputSpriteIndex(1, INPUT_ID::LEFT, isGamepad1Connected)));
+			drawSprite(TEXTURE_ASSET_ID::INPUTS, Vector2::right() * 150 + Vector2::down() * 8, Vector2::one(), 0.0f, Color::white(), Vector2::unitCenter(), camera, getSubSpriteRect({ 34, 24 }, getInputSpriteIndex(2, INPUT_ID::RIGHT, isGamepad1Connected)));
+			drawSprite(TEXTURE_ASSET_ID::INPUTS, Vector2::left() * 150 + Vector2::down() * 8, Vector2::one(), 0.0f, Color::white(), Vector2::unitCenter(), camera, getSubSpriteRect({ 34, 24 }, getInputSpriteIndex(2, INPUT_ID::LEFT, isGamepad1Connected)));
 
-			drawSprite(TEXTURE_ASSET_ID::INPUTS, Vector2::down() * 100 + Vector2::left() * 8, Vector2::one(), 0.0f, Color::white(), Vector2::unitCenter(), camera, getSubSpriteRect({ 34, 24 }, getInputSpriteIndex(1, INPUT_ID::JUMP)));
-			drawSprite(TEXTURE_ASSET_ID::INPUTS, Vector2::down() * 100 + Vector2::right() * 8, Vector2::one(), 0.0f, Color::white(), Vector2::unitCenter(), camera, getSubSpriteRect({ 34, 24 }, getInputSpriteIndex(2, INPUT_ID::JUMP)));
+			drawSprite(TEXTURE_ASSET_ID::INPUTS, Vector2::down() * 100 + Vector2::left() * 8, Vector2::one(), 0.0f, Color::white(), Vector2::unitCenter(), camera, getSubSpriteRect({ 34, 24 }, getInputSpriteIndex(1, INPUT_ID::JUMP, isGamepad1Connected)));
+			drawSprite(TEXTURE_ASSET_ID::INPUTS, Vector2::down() * 100 + Vector2::right() * 8, Vector2::one(), 0.0f, Color::white(), Vector2::unitCenter(), camera, getSubSpriteRect({ 34, 24 }, getInputSpriteIndex(2, INPUT_ID::JUMP, isGamepad1Connected)));
 		}
 		else if (gameState.currentState == GAME_SCREEN_ID::DRAWING_MAIN ||
 			gameState.currentState == GAME_SCREEN_ID::DRAWING_BACKGROUND) {

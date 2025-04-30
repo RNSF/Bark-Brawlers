@@ -5,6 +5,7 @@ module;
 export module RenderHelpers;
 import Rect;
 import Components;
+import Singletons;
 
 export {
 	Rect getSubSpriteRect(glm::ivec2 spriteCount, unsigned int spriteIndex) {
@@ -14,7 +15,18 @@ export {
 		return Rect::fromTopLeftSize(subSpritePosition, subSpriteSize);
 	};
 
-	unsigned int getInputSpriteIndex(unsigned int playerId, INPUT_ID inputId) {
+	unsigned int getInputSpriteIndex(unsigned int playerId, INPUT_ID inputId, bool isGamepad) {
+		if (isGamepad) {
+			switch (inputId) {
+				case INPUT_ID::LEFT: return 39 - 1;
+				case INPUT_ID::UP: return 36 - 1;
+				case INPUT_ID::RIGHT: return 37 - 1;
+				case INPUT_ID::DOWN: return 38 - 1;
+				case INPUT_ID::ATTACK: return 308 - 1;
+				case INPUT_ID::JUMP: return 307 - 1;
+				case INPUT_ID::SPECIAL: return 620 - 1;
+			}
+		}
 		switch (playerId) {
 		case 1: {
 			switch (inputId) {
@@ -41,6 +53,33 @@ export {
 		}
 
 		return 0;
+	}
+
+	wchar_t getInputCharacter(INPUT_ID inputId, bool isGamepad = false) {
+		if (!isGamepad) {
+			wchar_t first = L'}' + 3;
+			switch (inputId) {
+				case INPUT_ID::LEFT: return first + 1;
+				case INPUT_ID::UP: return first;
+				case INPUT_ID::RIGHT: return first + 3;
+				case INPUT_ID::DOWN: return first + 2;
+				case INPUT_ID::ATTACK: return first + 5;
+				case INPUT_ID::JUMP: return first + 4;
+				case INPUT_ID::SPECIAL: return first + 6;
+			}
+		}
+		else {
+			wchar_t first = L'}' + 10;
+			switch (inputId) {
+				case INPUT_ID::LEFT: return first + 3;
+				case INPUT_ID::UP: return first;
+				case INPUT_ID::RIGHT: return first + 1;
+				case INPUT_ID::DOWN: return first + 2;
+				case INPUT_ID::ATTACK: return first + 5;
+				case INPUT_ID::JUMP: return first + 4;
+				case INPUT_ID::SPECIAL: return first + 6;
+			}
+		}
 	}
 
 	TEXTURE_ASSET_ID getArenaBackgroundFromTheme(ARENA_THEME_ID themeId) {

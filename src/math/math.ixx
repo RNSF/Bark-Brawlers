@@ -1,5 +1,7 @@
 module;
 
+#include <cmath>
+
 export module Math;
 
 export {
@@ -18,5 +20,9 @@ export {
 		number += (1 - number / width) * width;
 		number = number % width;
 		return number + min;
+	}
+
+	float roundToNearest(float number, float roundTo) {
+		return std::round(number / roundTo) * roundTo;
 	}
 }

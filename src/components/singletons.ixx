@@ -29,4 +29,8 @@ export {
 	float mousePosY = 0.0f;
 
 	bool isTutorialCompleted = false;
+	bool isAnyInputJustPressed = false;
+
+	bool isGamepad1Connected = false;
+	bool isGamepad2Connected = false;
 }

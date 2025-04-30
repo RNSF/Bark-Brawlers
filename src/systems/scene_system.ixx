@@ -140,6 +140,18 @@ public:
 			}
 		}
 
+		if (isAnyInputJustPressed && sceneTime > 0.1f) {
+			if (gameState.currentScreen == GAME_SCREEN::TITLE_SCREEN) {
+				setScene(GAME_SCREEN::CHARACTER_SELECT_SCREEN);
+			}
+		}
+
+		if (isAnyInputJustPressed &&  sceneTime > 1.0f) {
+			if (gameState.currentScreen == GAME_SCREEN::GAME_END_SCREEN) {
+				setScene(GAME_SCREEN::CHARACTER_SELECT_SCREEN);
+			}
+		}
+
 
 
 		else if (gameState.currentScreen == GAME_SCREEN::ARENA_SELECT_SCREEN) {

@@ -103,7 +103,7 @@ int main() {
 		accumulator += delta;
 
 		if (accumulator >= FIXED_FRAME_PERIOD) {
-			glfwPollEvents();
+			
 			inputSystem.tick(window);
 			current_screen = gameState.currentScreen;
 			

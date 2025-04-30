@@ -903,8 +903,8 @@ export {
 			switch (fontId) {
 			case ATLAS_FONT_ID::BORE_BLASTERS: return {
 				TEXTURE_ASSET_ID::FONT_BORE_BLASTERS,
-				{10, 10},
-				32,
+				{10, 11},
+				' ',
 				Rect::centeredSquare(2),
 			};
 			case ATLAS_FONT_ID::SMILEY_5X5: return {

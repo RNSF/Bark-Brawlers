@@ -9,8 +9,16 @@ import Singletons;
 import Factories;
 import RenderSystem;
 import Components;
+import RenderHelpers;
 
 export class TutorialSystem {
+
+private:
+	std::wstring input(INPUT_ID i) {
+		return (std::wstring(1, getInputCharacter(i, isGamepad1Connected)));
+	}
+
+
 
 public:
 	void update(float delta, RenderSystem& renderSystem) {
@@ -100,11 +108,11 @@ public:
 
 				switch (tutorial.state) {
 					case TUTORIAL_STATE_ID::INACTIVE:		break;
-					case TUTORIAL_STATE_ID::WALK:			text.updateStr(L"Press [A] and [D] to move"); break;
-					case TUTORIAL_STATE_ID::JUMP:			text.updateStr(L"Press [F] to jump"); break;
-					case TUTORIAL_STATE_ID::LONG_JUMP:		text.updateStr(L"Hold [F] to jump higher"); break;
+					case TUTORIAL_STATE_ID::WALK:			text.updateStr(L"Press " + input(INPUT_ID::LEFT) + L" and " + input(INPUT_ID::RIGHT) + L" to move"); break;
+					case TUTORIAL_STATE_ID::JUMP:			text.updateStr(L"Press " + input(INPUT_ID::JUMP) + L" to jump"); break;
+					case TUTORIAL_STATE_ID::LONG_JUMP:		text.updateStr(L"Hold " + input(INPUT_ID::JUMP) + L" to jump higher"); break;
 					case TUTORIAL_STATE_ID::DASH:			{
-						text.updateStr(L"Press [H] to dash"); 
+						text.updateStr(L"Press " + input(INPUT_ID::SPECIAL) + L" to dash");
 						switch (gameState.player1Options.selectedClass) {
 						case CLASS_ID::KNIGHT: subText.updateStr(L"The knight can dash left and right"); break;
 						case CLASS_ID::ARCHER: subText.updateStr(L"The archer does a quick back hop"); break;
@@ -112,20 +120,20 @@ public:
 						}
 					} break;
 												
-					case TUTORIAL_STATE_ID::ATTACK:			text.updateStr(L"Press [G] to attack"); break;
+					case TUTORIAL_STATE_ID::ATTACK:			text.updateStr(L"Press " + input(INPUT_ID::ATTACK) + L" to attack"); break;
 					case TUTORIAL_STATE_ID::CHARGE_ATTACK:	{
-						text.updateStr(L"Hold [G] to do a charged attack"); 
+						text.updateStr(L"Hold " + input(INPUT_ID::ATTACK) + L" to do a charged attack");
 						subText.updateStr(L"Landing a fully charged attack deals double damage!");
 					} break;
 					case TUTORIAL_STATE_ID::ATTACK_UP_DOWN:	{ 
-						text.updateStr(L"Aim your attacks with [W] and [S]"); 
+						text.updateStr(L"Aim your attacks with " + input(INPUT_ID::UP) + L" and " + input(INPUT_ID::DOWN) + L"");
 						subText.updateStr(L"You can attack diagonally or straight up and down");
 					} break;
 					case TUTORIAL_STATE_ID::LAND_HIT:		{ 
 						text.updateStr(L"Land a hit to charge your special"); 
 						subText.updateStr(L"If you have a white outline your special is charged!");
 					} break;
-					case TUTORIAL_STATE_ID::SPECIAL_DASH:	text.updateStr(L"Hold [G] then [H] to special attack"); {
+					case TUTORIAL_STATE_ID::SPECIAL_DASH:	text.updateStr(L"Hold " + input(INPUT_ID::ATTACK) + L" then " + input(INPUT_ID::SPECIAL) + L" to special attack"); {
 						switch (gameState.player1Options.selectedClass) {
 						case CLASS_ID::KNIGHT: subText.updateStr(L"The knight deals damage to anything they special dash into"); break;
 						case CLASS_ID::ARCHER: subText.updateStr(L"The archer shoots out a burst of arrows"); break;
