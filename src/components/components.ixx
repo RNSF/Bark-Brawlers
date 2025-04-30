@@ -178,7 +178,7 @@ export {
 
 	const ConvexPolygon POLYGONS[(int)GEOMETRY_BUFFER_ID::COUNT] = {
 		ConvexPolygon({{0, 1}, {1, 1}, {1, 0}, {0, 0}}),
-		ConvexPolygon({{6, -1}, {-1, -6}, {-1, 6}}),
+		ConvexPolygon({{1, -1}, {-1, -1}, {-1, 1}, {1, 1}}),
 		ConvexPolygon({{0, 1 * 5}, {3 * 5, 1 * 5}, {5 * 5, 0}, {3 * 5, -1 * 5}, {0, -1 * 5}}),
 		ConvexPolygon({{-10, 1 * 3}, {-5, 1 * 3}, {0, 0}, {-5, -1 * 3}, {-10, -1 * 3}}),
 		ConvexPolygon({{-0.5f, 0.5f}, {0.5f, 0.5f}, {0.5f, -0.5f}, {-0.5f, -0.5f}}),

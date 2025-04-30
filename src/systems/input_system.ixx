@@ -14,6 +14,7 @@ import Singletons;
 import EditorHelpers;
 import SceneSystem;
 import Singletons;
+import WindowHelpers;
 
 using std::cout;
 using std::endl;
@@ -235,8 +236,9 @@ public:
 	// M1 [4] Keyboard/mouse control
 	void onMouseButtonPressed(int button, int action, int mods) {
 		if (action == GLFW_PRESS && gameState.currentState != GAME_SCREEN_ID::CHARACTER_SELECT) {
-			int tileX = (int)(mousePosX / WINDOW_W * TILEMAP_W);
-			int tileY = (int)(mousePosY / WINDOW_H * TILEMAP_H);
+			Vector2 windowSize = WindowHelpers::getWindowSize(window);
+			int tileX = (int)(mousePosX / windowSize.x * TILEMAP_W);
+			int tileY = (int)(mousePosY / windowSize.y * TILEMAP_H);
 			vec2 tilePos = vec2(tileX, tileY);
 			Tilemap<30, 17>& tilemap = ecs.tilemaps.components[0];
 

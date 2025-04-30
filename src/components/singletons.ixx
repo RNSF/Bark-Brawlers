@@ -1,4 +1,7 @@
+
 module;
+
+#include <GLFW/glfw3.h>
 
 export module Singletons;
 import Components;
@@ -6,7 +9,7 @@ import Components;
 export {
 
 
-
+	GLFWwindow* window;
 	Debug debug;
 	Tutorial tutorial;
 	GameState gameState;

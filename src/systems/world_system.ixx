@@ -11,12 +11,13 @@ module;
 export module WorldSystem;
 import Vector2;
 import Components;
+import Singletons;
 
 
  
 export class WorldSystem {
 
-	GLFWwindow* window;
+	
 
 public:
 	GLFWwindow* create_window() {
@@ -42,13 +43,14 @@ public:
 #if __APPLE__
 		glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 #endif
-		glfwWindowHint(GLFW_RESIZABLE, GL_FALSE);
+		glfwWindowHint(GLFW_RESIZABLE, GL_TRUE);
 		// CK: setting GLFW_SCALE_TO_MONITOR to true will rescale window but then you must handle different scalings
 		// glfwWindowHint(GLFW_SCALE_TO_MONITOR, GL_TRUE);		// GLFW 3.3+
-		glfwWindowHint(GLFW_SCALE_TO_MONITOR, GL_FALSE);		// GLFW 3.3+
+		glfwWindowHint(GLFW_SCALE_TO_MONITOR, GL_TRUE);		// GLFW 3.3+
+		
 
 		// Create the main window (for rendering, keyboard, and mouse input)
-		window = glfwCreateWindow(WINDOW_W, WINDOW_H, "Bark Brawlers", nullptr, nullptr);
+		window = glfwCreateWindow(DEFAULT_WINDOW_W, DEFAULT_WINDOW_H, "Bark Brawlers", nullptr, nullptr);
 		if (window == nullptr) {
 			std::cerr << "ERROR: Failed to glfwCreateWindow in world_system.cpp" << std::endl;
 			return nullptr;

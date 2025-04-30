@@ -41,8 +41,10 @@ constexpr float FIXED_FRAME_PERIOD = 1.0f / FIXED_FPS;
 
 constexpr int MAX_PLAYER_COUNT = 2;
 
-constexpr unsigned int WINDOW_W = 1920 / 2;
-constexpr unsigned int WINDOW_H = 1080 / 2;
+constexpr unsigned int DEFAULT_WINDOW_W = 1920 / 2;
+constexpr unsigned int DEFAULT_WINDOW_H = 1080 / 2;
+constexpr unsigned int RENDER_W = 1920;
+constexpr unsigned int RENDER_H = 1080;
 
 constexpr unsigned int TILEMAP_W = 30;
 constexpr unsigned int TILEMAP_H = 17;

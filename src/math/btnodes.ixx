@@ -16,6 +16,7 @@ import Pathing;
 import RNG;
 import Entity;
 import Rect;
+import WindowHelpers;
 
 
 
@@ -557,7 +558,7 @@ export class TargetMouse : public BTNode {
     bool execute(Entity& entity, float delta) override {
         auto& transform = ecs.transforms.get(entity);
         auto& aiAgent = ecs.aiAgents.get(entity);
-        aiAgent.targetPosition = defaultCamera.getTransform({WINDOW_W, WINDOW_H}) * Vector2(mousePosX, mousePosY);
+        aiAgent.targetPosition = defaultCamera.getTransform(WindowHelpers::getWindowSize(window)) * Vector2(mousePosX, mousePosY);
 
         // std::cout << "Target mouse position: " << aiAgent.targetPosition.x << ", " << aiAgent.targetPosition.y << std::endl;
 

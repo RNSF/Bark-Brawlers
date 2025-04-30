@@ -33,6 +33,7 @@ import Singletons;
 import Polygon;
 import Animation;
 import RenderHelpers;
+import WindowHelpers;
 
 
 // Single Vertex Buffer element for non-textured meshes (coloured.vs.glsl & chicken.vs.glsl)
@@ -51,6 +52,8 @@ struct TexturedVertex {
 export class RenderSystem {
 	Entity player1Entity;
 	Entity player2Entity;
+
+	Vector2 previousWindowSize;
 
 	float EMPHASIS_TIMER_START = 2;
 	float EMPHASIS_FACTOR_START = 20;
@@ -97,13 +100,10 @@ public:
 	}
 
 	void drawHUD(float delta) {
-		int w, h;
-		glfwGetFramebufferSize(window, &w, &h);
-
-		
+		int w = RENDER_W / 2;
+		int h = RENDER_H / 2;
 		Camera hudCamera;
-		hudCamera.size = { (float)w, (float)h };
-		hudCamera.zoom = 2.0f;  
+		hudCamera.zoom = 1.0f;  
 
 		// Draw player icons 
 		if (ecs.healths.has(player1Entity)) {
@@ -279,7 +279,7 @@ public:
 	GLFWwindow* window;
 
 	// Screen texture handles
-	GLuint frameBuffer;
+	GLuint frameBuffer = -1;
 	GLuint offScreenRenderBufferColor;
 	GLuint offScreenRenderBufferDepth;
 
@@ -382,6 +382,21 @@ public:
 		return true;
 	}
 
+	void regenerateFrameBuffer() {
+		glDeleteTextures(1, &offScreenRenderBufferColor);
+		glDeleteRenderbuffers(1, &offScreenRenderBufferDepth);
+
+		if (frameBuffer != -1) {
+			glDeleteFramebuffers(1, &frameBuffer);
+		}
+
+		glGenFramebuffers(1, &frameBuffer);
+		glBindFramebuffer(GL_FRAMEBUFFER, frameBuffer);
+
+		initScreenTexture();
+
+	}
+
 
 	//// Render initialization
 	bool init(GLFWwindow* window_arg) {
@@ -395,41 +410,17 @@ public:
 		assert(is_fine == 0);
 
 		// Create a frame buffer
-		frameBuffer = 0;
-		glGenFramebuffers(1, &frameBuffer);
-		glBindFramebuffer(GL_FRAMEBUFFER, frameBuffer);
+		regenerateFrameBuffer();
 		glHasErrors();
-
-		// For some high DPI displays (ex. Retina Display on Macbooks)
-		// https://stackoverflow.com/questions/36672935/why-retina-screen-coordinate-value-is-twice-the-value-of-pixel-value
-		int frameBuffer_width_px, frameBuffer_height_px;
-		int WINDOW_WIDTH_PX, WINDOW_HEIGHT_PX;
-		glfwGetWindowSize(window, &WINDOW_WIDTH_PX, &WINDOW_HEIGHT_PX);
-		glfwGetFramebufferSize(window, &frameBuffer_width_px, &frameBuffer_height_px);  // Note, this will be 2x the resolution given to glfwCreateWindow on retina displays
-		if (frameBuffer_width_px != WINDOW_WIDTH_PX)
-		{
-			printf("WARNING: retina display! https://stackoverflow.com/questions/36672935/why-retina-screen-coordinate-value-is-twice-the-value-of-pixel-value\n");
-			printf("glfwGetFramebufferSize = %d,%d\n", frameBuffer_width_px, frameBuffer_height_px);
-			printf("requested window width,height = %d,%d\n", WINDOW_WIDTH_PX, WINDOW_HEIGHT_PX);
-		}
-
-		// Hint: Ask your TA for how to setup pretty OpenGL error callbacks. 
-		// This can not be done in mac os, so do not enable
-		// it unless you are on Linux or Windows. You will need to change the window creation
-		// code to use OpenGL 4.3 (not suported on mac) and add additional .h and .cpp
-		// glDebugMessageCallback((GLDEBUGPROC)errorCallback, nullptr);
-
-		// We are not really using VAO's but without at least one bound we will crash in
-		// some systems.
 		
 		glGenVertexArrays(1, &vao);
 		glBindVertexArray(vao);
 		glHasErrors();
-
-		initScreenTexture();
 		initializeGlTextures();
 		initializeGlEffects();
 		initializeGlGeometryBuffers();
+
+		previousWindowSize = WindowHelpers::getWindowSize(window);
 
 		
 
@@ -551,20 +542,18 @@ public:
 	bool initScreenTexture() {
 		// create a single entry
 
-		int framebuffer_width, framebuffer_height;
-		glfwGetFramebufferSize(const_cast<GLFWwindow*>(window), &framebuffer_width, &framebuffer_height);  // Note, this will be 2x the resolution given to glfwCreateWindow on retina displays
-
+		
 		glGenTextures(1, &offScreenRenderBufferColor);
 		glBindTexture(GL_TEXTURE_2D, offScreenRenderBufferColor);
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, framebuffer_width, framebuffer_height, 0, GL_RGBA, GL_UNSIGNED_BYTE, 0);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, RENDER_W, RENDER_H, 0, GL_RGBA, GL_UNSIGNED_BYTE, 0);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 		glHasErrors();
 
 		glGenRenderbuffers(1, &offScreenRenderBufferDepth);
 		glBindRenderbuffer(GL_RENDERBUFFER, offScreenRenderBufferDepth);
 		glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, offScreenRenderBufferColor, 0);
-		glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, framebuffer_width, framebuffer_height);
+		glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, RENDER_W, RENDER_H);
 		glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, offScreenRenderBufferDepth);
 		glHasErrors();
 
@@ -1563,16 +1552,19 @@ public:
 	void drawToScreen() {
 		// Setting shaders
 	// get the vignette texture, sprite mesh, and program
-		glUseProgram(effects[(GLuint)EFFECT_ASSET_ID::SCREEN]);
+
+		const GLuint vignette_program = effects[(GLuint)EFFECT_ASSET_ID::SCREEN];
+		glUseProgram(vignette_program);
 		glHasErrors();
 
 		// Clearing backbuffer
+		Vector2 windowSize = WindowHelpers::getWindowSize(window);
 		int w, h;
 		glfwGetFramebufferSize(window, &w, &h); // Note, this will be 2x the resolution given to glfwCreateWindow on retina displays
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
-		glViewport(0, 0, w, h);
+		glViewport(0, 0, windowSize.x, windowSize.y);
 		glDepthRange(0, 10);
-		glClearColor(0.5f, 0.5f, 0.5f, 1.0);
+		glClearColor(0.0f, 0.0f, 0.0f, 1.0);
 		glClearDepth(1.f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		glHasErrors();
@@ -1590,8 +1582,7 @@ public:
 		glHasErrors();
 
 		// add the "vignette" effect
-		const GLuint vignette_program = effects[(GLuint)EFFECT_ASSET_ID::SCREEN];
-
+		
 
 		// Set the vertex position and vertex texture coordinates (both stored in the
 		// same VBO)
@@ -1601,15 +1592,42 @@ public:
 		glVertexAttribDivisor(in_position_loc, 0);
 		glHasErrors();
 
+
+		Transform transform;
+
+		Vector2 dim = Vector2(RENDER_W, RENDER_H);
+		//Vector2 dim = textureDimensions[(int)TEXTURE_ASSET_ID::BACKGROUND_CAVE];
+		Vector2 s = dim / WindowHelpers::getWindowSize(window);
+
+		Vector2 scl;
+		float a = s.minComponent() / s.maxComponent();
+		if (s.x > s.y) scl = Vector2(1, a);
+		else           scl = Vector2(a, 1);
+		transform.scale(scl);
+		//transform.scale(s);
+		//transform.scale(Vector2::one() * 0.5);
+		// 
+		// TRANSFORM
+		GLuint transform_loc = glGetUniformLocation(vignette_program, "transform");
+		glUniformMatrix3fv(transform_loc, 1, GL_FALSE, (float*)&transform.matrix);
+		glHasErrors();
+
 		// Bind our texture in Texture Unit 0
 		glActiveTexture(GL_TEXTURE0);
 
+		//glBindTexture(GL_TEXTURE_2D, textureGlHandles[(int) TEXTURE_ASSET_ID::BACKGROUND_CAVE]);
 		glBindTexture(GL_TEXTURE_2D, offScreenRenderBufferColor);
 		glHasErrors();
 
+		GLint size = 0;
+		glGetBufferParameteriv(GL_ELEMENT_ARRAY_BUFFER, GL_BUFFER_SIZE, &size);
+		glHasErrors();
+
+		GLsizei num_indices = size / sizeof(uint16_t);
+
 		// Draw
 		glDrawElements(
-			GL_TRIANGLES, 3, GL_UNSIGNED_SHORT,
+			GL_TRIANGLES, num_indices, GL_UNSIGNED_SHORT,
 			nullptr); // one triangle = 3 vertices; nullptr indicates that there is
 		// no offset from the bound index buffer
 		glHasErrors();
@@ -1876,6 +1894,13 @@ public:
 	// http://www.opengl-tutorial.org/intermediate-tutorials/tutorial-14-render-to-texture/
 	void draw(float delta, GAME_SCREEN game_screen) {
 		// Getting size of window
+
+		Vector2 windowSize = WindowHelpers::getWindowSize(window);
+		if (previousWindowSize != windowSize) {
+			regenerateFrameBuffer();
+			previousWindowSize = windowSize;
+		}
+
 		int w, h;
 		glfwGetFramebufferSize(window, &w, &h); // Note, this will be 2x the resolution given to glfwCreateWindow on retina displays
 
@@ -1884,7 +1909,8 @@ public:
 		glHasErrors();
 
 		// clear backbuffer
-		glViewport(0, 0, w, h);
+		//Vector2 windowSize = WindowHelpers::getWindowSize(window);
+		glViewport(0, 0, RENDER_W, RENDER_H);
 		glDepthRange(0.00001, 10);
 
 
